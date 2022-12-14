@@ -6,6 +6,10 @@ export class Cars {
   id: number;
   @Column()
   brand: string;
-  @Column({ default: false })
-  status: boolean;
+  @Column()
+  model: string;
+  @Column()
+  plate: string;
+  @Column()
+  VIN: string;
 }

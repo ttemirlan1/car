@@ -12,6 +12,13 @@ export class CarsService {
     private carsRepo: Repository<Cars>,
   ) {}
   async create(createCarDto: CreateCarDto) {
+    const car = this.carsRepo.findOne({
+      where: [{ VIN: createCarDto.VIN }, { plate: createCarDto.plate }],
+    });
+    //сверху был поиск по вину ИЛИ по НОМЕРУ`
+    // where: [{ VIN: createCarDto.VIN , plate: createCarDto.plate }], =>  &&
+    // where: [{ VIN: createCarDto.VIN } , { plate: createCarDto.plate }], =>  ||
+    if (car) throw new BadRequestException(`car ${car} already exists`);
     return await this.carsRepo.save(createCarDto);
   }
 

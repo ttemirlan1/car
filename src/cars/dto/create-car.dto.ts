@@ -4,5 +4,10 @@ export class CreateCarDto {
   @ApiProperty()
   brand: string;
   @ApiProperty()
-  status?: boolean;
+  model: string;
+  @ApiProperty()
+  plate: string;
+  @ApiProperty()
+  VIN: string;
+
 }

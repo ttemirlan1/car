@@ -3,7 +3,11 @@ import { CreateCarDto } from './create-car.dto';
 
 export class UpdateCarDto extends PartialType(CreateCarDto) {
   @ApiProperty()
-  brand?: string;
+  brand: string;
   @ApiProperty()
-  status: boolean;
+  model: string;
+  @ApiProperty()
+  plate: string;
+  @ApiProperty()
+  VIN: string;
 }
