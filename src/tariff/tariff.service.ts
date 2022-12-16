@@ -73,7 +73,7 @@ export class TariffService {
     start: Date,
     end: Date,
     tariff: TariffEnum,
-    sale: SaleEnum,
+    // sale: SaleEnum,
   ): Promise<string> {
     const diffDays = await this.findDifDays(start, end);
     let pd = 0;//это per day
