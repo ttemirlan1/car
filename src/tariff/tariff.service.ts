@@ -9,7 +9,7 @@ import { PassportModule } from '@nestjs/passport';
 import { TariffEnum } from './enum/tariff.enum';
 import { SaleEnum } from './enum/sale.enum';
 
-@Injectable()
+// @Injectable()
 export class TariffService {
   constructor(
     @InjectRepository(Tariff)
@@ -22,50 +22,62 @@ export class TariffService {
       createTariffDto.start,
       createTariffDto.end,
     );
+    console.log(diffDays);
     if (diffDays > 30) throw new BadRequestException('ограничегие по дням');
     if (
-      createTariffDto.start.getDay() == 0 ||
-      createTariffDto.start.getDate() == 6
+      new Date (createTariffDto.start).getDay() == 0 ||
+      new Date (createTariffDto.start).getDay() == 6
     )
       throw new BadRequestException('выходные дни');
-    if (createTariffDto.end.getDay() == 0 || createTariffDto.end.getDate() == 6)
+    if (
+      new Date(createTariffDto.end).getDay() == 0 ||
+      new Date(createTariffDto.end).getDay() == 6
+    )
       throw new BadRequestException('выходные дни');
-    const isEnable = await this.findLastOrder(
-      createTariffDto.car_id,
-      createTariffDto.start,
-    );
-    if (!isEnable) throw new BadRequestException('Пауза не соблюдена');
+
+    if (!Object.values(TariffEnum).includes(createTariffDto.tariff))
+      throw new BadRequestException('Tariff Enum is filled incorrect');
+    if (!Object.values(SaleEnum).includes(createTariffDto.sales))
+      throw new BadRequestException('Sale Enum is filled incorrect');
     const calculated = await this.calculate(
       createTariffDto.start,
       createTariffDto.end,
       createTariffDto.tariff,
-    );
+    ); 
     await this.tariffRepo.save(createTariffDto);
     return calculated;
   }
   async findAll() {
     return await this.tariffRepo.find();
+    // return await this.carService.findAll();
   }
 
   async findActive() {
-    const cars = await this.tariffRepo.find({ where: { end: new Date() } });
-    cars.sort();
-    return cars;
+    // const newDate = new Date();
+    const cars = await this.tariffRepo.find();
+    const filtered = cars.filter((rent) => rent.end > new Date());
+    return filtered.sort();
   }
 
   async remove(id: number) {
-    return await `This action removes a #${id} tariff`;
+    const tarif = await this.tariffRepo.findOne({ where: { id } });
+    if (!tarif) throw new BadRequestException('такого тарифа нет ссс');
+    return await this.tariffRepo.delete(id);
   }
 
-  private async findLastOrder(id: number, start: Date): Promise<boolean> {
-    const car = await this.tariffRepo.find({ where: { car_id: id } });
-    const lastOrder = car[car.length - 1];
-    const diffDays = await this.findDifDays(start, lastOrder.end);
-    if (diffDays < 3) throw new BadRequestException('оишбка');
-    return true;
-  }
+  // private async findLastOrder(id: number, start: Date): Promise<boolean> {
+  //   console.log(id)
+  //   const car = await this.tariffRepo.find({ where: { car_id: id } });
+  //   console.log(car)
+  //   const lastOrder = car[car.length - 1];
+  //   const diffDays = await this.findDifDays(start, lastOrder.end);
+  //   if (diffDays < 3) throw new BadRequestException('оишбка');
+  //   return true;
+  // }
   private async findDifDays(start: Date, end: Date){
-    const timeDiff = Math.abs(end.getTime() - start.getTime());
+    const timeDiff = Math.abs(
+      new Date(end).getTime() - new Date(start).getTime(),
+    );
     const diffDays = Math.ceil(timeDiff / (1000 * 3600 * 24));
     return diffDays;
   }

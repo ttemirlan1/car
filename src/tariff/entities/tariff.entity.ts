@@ -1,4 +1,4 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { Cars } from '../../cars/entities/car.entity';
 import { SaleEnum } from '../enum/sale.enum';
 import { TariffEnum } from '../enum/tariff.enum';
@@ -7,8 +7,8 @@ import { TariffEnum } from '../enum/tariff.enum';
 export class Tariff {
   @PrimaryGeneratedColumn()
   id: number;
-  @OneToOne(() => Cars, (cars) => cars.id)
-  @JoinColumn()
+  // @OneToOne(() => Cars, (cars) => cars.id)
+  @ManyToOne(() => Cars, (cars) => cars.id, { onDelete: 'CASCADE' })
   car_id: number;
   @Column()
   tariff: TariffEnum;

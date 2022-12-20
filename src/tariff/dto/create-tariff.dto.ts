@@ -4,7 +4,6 @@ import { SaleEnum } from '../enum/sale.enum';
 import { TariffEnum } from '../enum/tariff.enum';
 
 export class CreateTariffDto {
-
   @ApiProperty()
   car_id: number;
   @ApiProperty()
